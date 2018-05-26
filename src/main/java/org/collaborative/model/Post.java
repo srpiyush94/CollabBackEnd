@@ -4,6 +4,8 @@ import java.util.Date;
 
 import javax.persistence.*;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 
 @Entity
 @Table(name="user_post")
@@ -18,11 +20,20 @@ public class Post {
 	@Lob
 	@Column(nullable=false)
 	private String blogContent;
-	private Date postedOn;
 	@ManyToOne
 	private User postedBy;
 	private int likes;
-	private boolean approved;
+	Date createdDate;
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy@HH:mm:ss")
+	Date publishDate;
+	private String status;
+	private int noOfLikes;
+	public int getNoOfLikes() {
+		return noOfLikes;
+	}
+	public void setNoOfLikes(int noOfLikes) {
+		this.noOfLikes = noOfLikes;
+	}
 	public int getId() {
 		return id;
 	}
@@ -41,12 +52,7 @@ public class Post {
 	public void setBlogContent(String blogContent) {
 		this.blogContent = blogContent;
 	}
-	public Date getPostedOn() {
-		return postedOn;
-	}
-	public void setPostedOn(Date postedOn) {
-		this.postedOn = postedOn;
-	}
+
 	public User getPostedBy() {
 		return postedBy;
 	}
@@ -59,13 +65,24 @@ public class Post {
 	public void setLikes(int likes) {
 		this.likes = likes;
 	}
-	public boolean isApproved() {
-		return approved;
+	public Date getCreatedDate() {
+		return createdDate;
 	}
-	public void setApproved(boolean approved) {
-		this.approved = approved;
+	public void setCreatedDate(Date createdDate) {
+		this.createdDate = createdDate;
 	}
-	
-	
+	public Date getPublishDate() {
+		return publishDate;
+	}
+	public void setPublishDate(Date publishDate) {
+		this.publishDate = publishDate;
+	}
+	public String getStatus() {
+		return status;
+	}
+	public void setStatus(String status) {
+		this.status = status;
+	}
+		
 
 }

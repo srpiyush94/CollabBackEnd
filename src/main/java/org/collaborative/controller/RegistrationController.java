@@ -19,14 +19,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.collaborative.util.Util;
 
 
-@Controller
+@RestController
 public class RegistrationController {
     private final Logger LOGGER = LoggerFactory.getLogger(getClass());
-
    
   @Autowired
    private UserService userService;
@@ -41,8 +41,8 @@ public class RegistrationController {
 		
 	 if (!userService.isEmailValid(user.getEmail()))
 	 {
-			Error error = new Error(user.getEmail()+"...Email address already exists,, please enter different email");
-			return new ResponseEntity<Error>(error, HttpStatus.NOT_ACCEPTABLE);
+		 ErrorClass error = new ErrorClass(3,user.getEmail()+"...Email address already exists,, please enter different email");
+			return new ResponseEntity<ErrorClass>(error, HttpStatus.NOT_ACCEPTABLE);
 	}
 	 	user.setSecurityKey(Util.getSecurityKey());
 	 	System.out.println(user.getSecurityKey());
@@ -60,8 +60,8 @@ public class RegistrationController {
 			emailServiceHelper.sendVerificationEmail(user);
 			return new ResponseEntity<User>(user, HttpStatus.OK);
 		} else {
-			Error error = new Error("unable to register user details");
-			return new ResponseEntity<Error>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+			ErrorClass error = new ErrorClass(1,"unable to register user details");
+			return new ResponseEntity<ErrorClass>(error, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
     
@@ -69,7 +69,7 @@ public class RegistrationController {
     public ResponseEntity<?> verifyEmail(@RequestParam("li") String token ){
     	
     	List<String> response = new ArrayList<String>();
-    	User user = Util.getUserDetailsFromToken(token); //select * from user where token="11c1726a-fe38-4111-be58-677c8f17010e";
+    	User user = Util.getUserDetailsFromToken(token); //select * from user where token="11c1726a-fe4111-be677c8f17010e";
     	if(user == null){
     		response.add("Sorry, URL to verify user is not valid");
     		return new ResponseEntity<List<String>>(response, HttpStatus.BAD_REQUEST);
@@ -105,9 +105,18 @@ public class RegistrationController {
     	User validUser=userService.login(user);
     	
     	if(validUser==null){
-    		Error error=new Error("Login failed... Invalid email/password...");
-    	     return new ResponseEntity<Error>(error,HttpStatus.UNAUTHORIZED);
+    		ErrorClass error=new ErrorClass(2, "Login failed... Invalid email/password...");
+    	     return new ResponseEntity<ErrorClass>(error,HttpStatus.UNAUTHORIZED);
     	}
+    	User u=userService.getUserById(validUser.getId());
+    	System.out.println("Role:"+u.getRole()+"\t Status:"+User.STATUS_VERIFIED);
+    	if(!(u.getStatus().equals(User.STATUS_VERIFIED)))
+    	{
+    	 
+    		ErrorClass error=new ErrorClass(4,"User credential is not Verfied...");
+   	     return new ResponseEntity<ErrorClass>(error,HttpStatus.UNAUTHORIZED);
+    	}
+    	
     	else{
     		validUser.setEnabled(true);//
     		userService.updateUser(validUser);//update user_account set enabled='true' where email='sr.piyush94@gmail.com';
@@ -119,8 +128,8 @@ public class RegistrationController {
     public ResponseEntity<?> logout(HttpSession session) {
     	User user=(User)session.getAttribute("validUser");
     	if(user==null) {
-    		Error error=new Error("Please login ...");
-    		return new ResponseEntity<Error>(error,HttpStatus.UNAUTHORIZED);
+    		ErrorClass error=new ErrorClass(5,"Please login ...");
+    		return new ResponseEntity<ErrorClass>(error,HttpStatus.UNAUTHORIZED);
     	
     }
     	

@@ -32,11 +32,13 @@ public class UserDAOImpl implements UserDAO {
 
 	@Transactional
 	public boolean saveUser(User userDetail) {
+		LOGGER.info("Registration start");
 		userDetail.setEnabled(false);
 		userDetail.setIssuedDateTime(LocalDateTime.now());
 		userDetail.setStatus(User.STATUS_PENDING);
 		userDetail.setRole("ROLE_USER");
 		sessionFactory.getCurrentSession().saveOrUpdate(userDetail);
+		LOGGER.info("Registration has been complete successfully");
 		return true;
 
 	}
@@ -98,6 +100,7 @@ public class UserDAOImpl implements UserDAO {
 	}
 
 	
+	@SuppressWarnings("rawtypes")
 	@Transactional
 	public User login(User user) {
 	

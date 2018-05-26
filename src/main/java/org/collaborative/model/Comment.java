@@ -1,12 +1,8 @@
 package org.collaborative.model;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.*;
 
 import javax.persistence.*;
-
-import org.hibernate.validator.constraints.NotBlank;
 @Entity
 @Table(name="user_blogcomment")
 public class Comment {
